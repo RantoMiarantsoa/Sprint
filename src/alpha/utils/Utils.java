@@ -1,0 +1,66 @@
+package alpha.utils;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.File;
+import java.lang.annotation.ElementType;
+import java.net.URL;
+import java.lang.annotation.Annotation;
+public class Utils {
+    public static List<Class<?>> getNameClass(String packageName) {
+    List<Class<?>> listeClass = new ArrayList<>();
+    String packagepath = packageName.replaceAll("\\.", "/");
+    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+    URL packageURL = classLoader.getResource(packagepath);
+
+    if (packageURL != null && packageURL.getProtocol().equals("file")) {
+        try {
+            File packageDirectory = new File(packageURL.toURI());
+            
+            if (packageDirectory.isDirectory()) {
+                File[] files = packageDirectory.listFiles();
+
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isFile() && file.getName().endsWith(".class")) {
+                            String className = file.getName()
+                                .replaceAll("\\.class$", "");
+                            String fullClassName = packageName + "." + className;
+                            
+                            try {
+                                Class<?> clazz = classLoader.loadClass(fullClassName);
+                                listeClass.add(clazz);
+                                System.out.println("Classe: " + fullClassName);
+                            } catch (ClassNotFoundException e) {
+                                System.out.println("Erreur chargement: " + fullClassName);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Package non trouvé ou invalide");
+            e.printStackTrace();
+        }
+    }
+    
+    return listeClass;
+}
+
+
+
+public static List<String> getNameAnnote(Class<? extends Annotation> annotation, String packageName) {
+    List<String> nameclasse = new ArrayList<>();
+    List<Class<?>> listeClass = Utils.getNameClass(packageName);
+    
+    for (Class<?> clazz : listeClass) {
+        if (clazz.isAnnotationPresent(annotation)) {
+            nameclasse.add(clazz.getName());
+            System.out.println("Classe avec annotation: " + clazz.getName());
+        }
+    }
+    
+    return nameclasse;
+}
+
+
+}
