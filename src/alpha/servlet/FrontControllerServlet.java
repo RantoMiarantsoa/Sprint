@@ -2,16 +2,22 @@ package alpha.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import alpha.omega.Controller;
+import alpha.utils.RouteMapping;
 import alpha.utils.Utils;
 
 public class FrontControllerServlet extends HttpServlet {
     private Utils utils;
     private String packageName;
-    private List<String> controllers;  // ← Ajouter comme variable
+
+    private List<Class<?>> controllers; 
+    
+    HashMap<String,RouteMapping> mapMethod;
+
 
     @Override
     public void init() throws ServletException {
@@ -29,8 +35,8 @@ public class FrontControllerServlet extends HttpServlet {
         controllers = utils.getNameAnnote(Controller.class, packageName);
         
         System.out.println("Controllers trouvés dans " + packageName + ": " + controllers.size());
-        for (String controller : controllers) {
-            System.out.println("  - " + controller);
+        for (Class<?> controller : controllers) {
+            System.out.println("  - " + controller.getName());
         }
     }
 
@@ -42,8 +48,8 @@ public class FrontControllerServlet extends HttpServlet {
         out.println("<html><body>");
         out.println("<h1>Controllers trouvés:</h1>");
         out.println("<ul>");
-        for (String controller : controllers) {
-            out.println("<li>" + controller + "</li>");
+        for (Class<?> controller : controllers) {
+            out.println("<li>" + controller.getName() + "</li>");
         }
         out.println("</ul>");
         out.println("</body></html>");

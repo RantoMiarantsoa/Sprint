@@ -1,10 +1,13 @@
 package alpha.utils;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.io.File;
 import java.lang.annotation.ElementType;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.lang.annotation.Annotation;
+import alpha.omega.UrlMapping;
 public class Utils {
     public static List<Class<?>> getNameClass(String packageName) {
     List<Class<?>> listeClass = new ArrayList<>();
@@ -48,13 +51,26 @@ public class Utils {
 
 
 
-public static List<String> getNameAnnote(Class<? extends Annotation> annotation, String packageName) {
-    List<String> nameclasse = new ArrayList<>();
+public static HashMap<String, RouteMapping> getMethodFunction(List<Class<?>> listeController) {
+
+    HashMap<String, RouteMapping> listeMap = new HashMap<>();
+
+   for(Class<?> clazz : listeController){
+    Method [] method = clazz.getDeclaredMethods();
+    for(Method meth: method){
+        if(meth.isAnnotationPresent(UrlMapping.class));
+    }
+   }
+
+    return listeMap;
+}
+public static List<Class<?>> getNameAnnote(Class<? extends Annotation> annotation, String packageName) {
+    List<Class<?>> nameclasse = new ArrayList<>();
     List<Class<?>> listeClass = Utils.getNameClass(packageName);
     
     for (Class<?> clazz : listeClass) {
         if (clazz.isAnnotationPresent(annotation)) {
-            nameclasse.add(clazz.getName());
+            nameclasse.add(clazz);
             System.out.println("Classe avec annotation: " + clazz.getName());
         }
     }
