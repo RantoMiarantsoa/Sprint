@@ -32,8 +32,9 @@ public class FrontControllerServlet extends HttpServlet {
         utils = new Utils();
         
         // ← Sauvegarder la liste
-        controllers = utils.getNameAnnote(Controller.class, packageName);
+        controllers = Utils.getNameAnnote(Controller.class, packageName);
         
+        mapMethod = Utils.getMethodFunction(controllers);
         System.out.println("Controllers trouvés dans " + packageName + ": " + controllers.size());
         for (Class<?> controller : controllers) {
             System.out.println("  - " + controller.getName());

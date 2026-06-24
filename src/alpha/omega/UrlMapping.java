@@ -7,5 +7,5 @@ import java.lang.annotation.RetentionPolicy;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UrlMapping {
-    
+    String value();
 }
