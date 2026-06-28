@@ -67,7 +67,6 @@ public static HashMap<String, RouteMapping> getMethodFunction(List<Class<?>> lis
         
     }
    }
-
     return listeMap;
 }
 public static List<Class<?>> getNameAnnote(Class<? extends Annotation> annotation, String packageName) {
