@@ -58,10 +58,15 @@ public static HashMap<String, RouteMapping> getMethodFunction(List<Class<?>> lis
    for(Class<?> clazz : listeController){
     Method [] method = clazz.getDeclaredMethods();
     for(Method meth: method){
-        if(meth.isAnnotationPresent(UrlMapping.class));
+        if(meth.isAnnotationPresent(UrlMapping.class)){
+            UrlMapping urlMapping = meth.getAnnotation(UrlMapping.class);
+            String url = urlMapping.value();
+            RouteMapping routeMapping = new RouteMapping(clazz,meth);
+            listeMap.put(url, routeMapping);
+        }
+        
     }
    }
-
     return listeMap;
 }
 public static List<Class<?>> getNameAnnote(Class<? extends Annotation> annotation, String packageName) {
