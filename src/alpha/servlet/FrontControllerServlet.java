@@ -11,6 +11,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import alpha.omega.Controller;
 import alpha.utils.RouteMapping;
+import alpha.utils.UrlClasse;
 import alpha.utils.Utils;
 
 public class FrontControllerServlet extends HttpServlet {
@@ -19,7 +20,7 @@ public class FrontControllerServlet extends HttpServlet {
 
     private List<Class<?>> controllers; 
     
-    HashMap<String,RouteMapping> mapMethod;
+    HashMap<UrlClasse,RouteMapping> mapMethod;
 
 
     @Override
@@ -34,7 +35,7 @@ public class FrontControllerServlet extends HttpServlet {
         
         utils = new Utils();
         
-        // ← Sauvegarder la liste 
+      
         controllers = Utils.getNameAnnote(Controller.class, packageName);
         
         mapMethod = Utils.getMethodFunction(controllers);
@@ -44,45 +45,44 @@ public class FrontControllerServlet extends HttpServlet {
         }
     }
 
-protected void processRequest(HttpServletRequest req, HttpServletResponse res)
+     protected void processRequest(HttpServletRequest req, HttpServletResponse res)
         throws ServletException, IOException {
     res.setContentType("text/html;charset=UTF-8");
     PrintWriter out = res.getWriter();
-    
+
     String pathInfo = req.getPathInfo();
     String requestPath = pathInfo != null ? pathInfo : "/";
     
     System.out.println("URL demandée: " + requestPath);
     
-    if (mapMethod.containsKey(requestPath)) {
-       
-        RouteMapping mapping = mapMethod.get(requestPath);
-        System.out.println("Route trouvée: " + requestPath);
-        
-        try {
-       Class<?> controllerClass = mapping.getListeController();
-Method method = mapping.getMethod();
-System.out.println("Controller: " + controllerClass);
-System.out.println("Méthode: " + method.getName());
-out.println("Controller: " + controllerClass.getSimpleName() + "<br>");
-out.println("Méthode: " + method.getName() + "<br>");
+UrlClasse urlTrouvee = null;
+RouteMapping mapping = null;
 
-        } catch (Exception e) {
-            out.println("<h1> Erreur</h1>");
-            out.println("<p>" + e.getMessage() + "</p>");
-            e.printStackTrace();
-        }
-    } else {
+for (Map.Entry<UrlClasse, RouteMapping> entry : mapMethod.entrySet()) {
+    if (entry.getKey().getUrl().equals(requestPath)) {
+        urlTrouvee = entry.getKey();
+        mapping = entry.getValue();
+        break;
+    }
+}
+
+if (mapping != null) {
+    out.println("Controller : " + mapping.getListeController().getSimpleName());
+    out.println("<br>");
+    out.println("Méthode : " + mapping.getMethod().getName());
+    out.println("<br>");
+    out.println("MethodeHTTP : " + urlTrouvee.getMethodehttp());
+}else {
            out.println("<html><body>");
     out.println("<h1>Routes disponibles:</h1>");
     out.println("<ul>");
     
-    for (Map.Entry<String, RouteMapping> entry : mapMethod.entrySet()) {
-        String url = entry.getKey();
+    for (Map.Entry<UrlClasse, RouteMapping> entry : mapMethod.entrySet()) {
+        String url = entry.getKey().getUrl();
         String className = entry.getValue().getListeController().getSimpleName();
         String method = entry.getValue().getMethod().getName();
-        
-        out.println("<li>" + className + " | " + url + " | " + method + "</li>");
+        String parameterString = entry.getKey().getMethodehttp();
+        out.println("<li>" + className + " | " + url + " | " + method + " | " + parameterString + "|" + "</li>");
     }
     
     out.println("</ul>");

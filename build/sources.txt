@@ -3,3 +3,4 @@
 /home/ranto/S4/spring/Sprint/src/alpha/omega/Controller.java
 /home/ranto/S4/spring/Sprint/src/alpha/utils/RouteMapping.java
 /home/ranto/S4/spring/Sprint/src/alpha/utils/Utils.java
+/home/ranto/S4/spring/Sprint/src/alpha/utils/UrlClasse.java
