@@ -51,9 +51,9 @@ public class Utils {
 
 
 
-public static HashMap<String, RouteMapping> getMethodFunction(List<Class<?>> listeController) {
+public static HashMap<UrlClasse, RouteMapping> getMethodFunction(List<Class<?>> listeController) {
 
-    HashMap<String, RouteMapping> listeMap = new HashMap<>();
+    HashMap<UrlClasse, RouteMapping> listeMap = new HashMap<>();
 
    for(Class<?> clazz : listeController){
     Method [] method = clazz.getDeclaredMethods();
@@ -61,8 +61,11 @@ public static HashMap<String, RouteMapping> getMethodFunction(List<Class<?>> lis
         if(meth.isAnnotationPresent(UrlMapping.class)){
             UrlMapping urlMapping = meth.getAnnotation(UrlMapping.class);
             String url = urlMapping.value();
+            UrlClasse urlClasse = new UrlClasse(urlMapping.parameter(), url);
             RouteMapping routeMapping = new RouteMapping(clazz,meth);
-            listeMap.put(url, routeMapping);
+            if(!listeMap.containsKey(urlClasse)){
+                listeMap.put(urlClasse, routeMapping);
+            }
         }
         
     }
@@ -82,6 +85,7 @@ public static List<Class<?>> getNameAnnote(Class<? extends Annotation> annotatio
     
     return nameclasse;
 }
+
 
 
 }
