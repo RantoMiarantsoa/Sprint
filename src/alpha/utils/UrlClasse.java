@@ -6,6 +6,9 @@ public class UrlClasse {
 
 
 
+    public UrlClasse() {
+    }
+
     public UrlClasse(String methodeHttp, String url) {
         MethodeHttp = methodeHttp;
         this.url = url;
