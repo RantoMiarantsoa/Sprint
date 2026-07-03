@@ -7,6 +7,9 @@ public class RouteMapping {
     
     Method method;
 
+    public RouteMapping() {
+    }
+
     public RouteMapping(Class<?> listeController, Method method) {
         this.listeController = listeController;
         this.method = method;
