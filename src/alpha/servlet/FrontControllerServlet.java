@@ -9,38 +9,30 @@ import java.util.Map;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
-import alpha.omega.Controller;
 import alpha.utils.Execution;
 import alpha.utils.RouteMapping;
 import alpha.utils.UrlClasse;
-import alpha.utils.Utils;
+import alpha.listener.FrontControllerListener;
 
 public class FrontControllerServlet extends HttpServlet {
-    private Utils utils;
-    private String packageName;
     private List<Class<?>> controllers;
     HashMap<UrlClasse, RouteMapping> mapMethod;
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
+@Override
+public void init() throws ServletException {
+    super.init();
 
-        packageName = getInitParameter("packageName");
+    ServletContext context = getServletContext();
+    controllers = (List<Class<?>>) context.getAttribute(FrontControllerListener.CONTROLLERS_ATTRIBUTE);
+    mapMethod = (HashMap<UrlClasse, RouteMapping>) context.getAttribute(FrontControllerListener.ROUTES_ATTRIBUTE);
 
-        if (packageName == null || packageName.isEmpty()) {
-            throw new ServletException("packageName init parameter is required");
-        }
-
-        utils = new Utils();
-
-        controllers = Utils.getNameAnnote(Controller.class, packageName);
-
-        mapMethod = Utils.getMethodFunction(controllers);
-        System.out.println("Controllers trouvés dans " + packageName + ": " + controllers.size());
-        for (Class<?> controller : controllers) {
-            System.out.println("  - " + controller.getName());
-        }
+    if (controllers == null || mapMethod == null) {
+        throw new ServletException("FrontControllerListener must initialize controllers and routes before the servlet starts");
     }
+
+    System.out.println("Controllers trouvés: " + controllers.size());
+    controllers.forEach(c -> System.out.println("  - " + c.getName()));
+}
 
     public RouteMapping getProcessPath(String requestMethod, String requestPath) {
         return mapMethod.get(new UrlClasse(requestMethod, requestPath));
