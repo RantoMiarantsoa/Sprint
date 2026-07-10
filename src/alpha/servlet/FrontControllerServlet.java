@@ -8,8 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import alpha.utils.Dispatcher;
 import alpha.utils.Execution;
+import alpha.utils.ModelAndView;
 import alpha.utils.RouteMapping;
 import alpha.utils.UrlClasse;
 import alpha.listener.FrontControllerListener;
@@ -17,6 +21,7 @@ import alpha.listener.FrontControllerListener;
 public class FrontControllerServlet extends HttpServlet {
     private List<Class<?>> controllers;
     HashMap<UrlClasse, RouteMapping> mapMethod;
+    
 
 @Override
 public void init() throws ServletException {
@@ -25,6 +30,9 @@ public void init() throws ServletException {
     ServletContext context = getServletContext();
     controllers = (List<Class<?>>) context.getAttribute(FrontControllerListener.CONTROLLERS_ATTRIBUTE);
     mapMethod = (HashMap<UrlClasse, RouteMapping>) context.getAttribute(FrontControllerListener.ROUTES_ATTRIBUTE);
+
+ 
+
 
     if (controllers == null || mapMethod == null) {
         throw new ServletException("FrontControllerListener must initialize controllers and routes before the servlet starts");
@@ -51,22 +59,23 @@ public void init() throws ServletException {
     protected void processRequest(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
         res.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = res.getWriter();
+    PrintWriter out = res.getWriter();
 
-        String pathInfo = req.getPathInfo();
-        String requestMethod = req.getMethod();
-        String requestPath = pathInfo != null ? pathInfo : "/";
+    String servletPath = req.getServletPath();
+    String requestMethod = req.getMethod();
+    String requestPath = (servletPath == null || servletPath.isEmpty()) ? "/" : servletPath;
+        
         RouteMapping mapping = getProcessPathWithFallback(requestMethod, requestPath);
         System.out.println("URL demandée: " + requestPath);
         System.out.println("Méthode HTTP: " + requestMethod);
         out.println("Request Path:" + requestPath);
 
         if (mapping != null) {
+                try {
+                    Class<?> controllerClass = mapping.getListeController();
+                    Method method = mapping.getMethod();
 
-            try {
-                Class<?> controllerClass = mapping.getListeController();
-                Method method = mapping.getMethod();
-                Execution.executeMethode(method);
+                  Execution.executeMethode(method,req,res);
                 System.out.println("Controller: " + controllerClass);
                 System.out.println("Méthode: " + method.getName());
                 out.println("Controller: " + controllerClass.getSimpleName() + "<br>");
