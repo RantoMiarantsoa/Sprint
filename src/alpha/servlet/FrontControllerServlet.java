@@ -11,16 +11,21 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 import alpha.utils.Dispatcher;
 import alpha.utils.Execution;
 import alpha.utils.ModelAndView;
 import alpha.utils.RouteMapping;
 import alpha.utils.UrlClasse;
 import alpha.listener.FrontControllerListener;
+import alpha.omega.ApiRest;
 
 public class FrontControllerServlet extends HttpServlet {
     private List<Class<?>> controllers;
     HashMap<UrlClasse, RouteMapping> mapMethod;
+    private ApplicationContext applicationContext;
     
 
 @Override
@@ -28,6 +33,9 @@ public void init() throws ServletException {
     super.init();
 
     ServletContext context = getServletContext();
+        WebApplicationContext springContext =
+            WebApplicationContextUtils.getWebApplicationContext(context);
+        applicationContext = springContext;
     controllers = (List<Class<?>>) context.getAttribute(FrontControllerListener.CONTROLLERS_ATTRIBUTE);
     mapMethod = (HashMap<UrlClasse, RouteMapping>) context.getAttribute(FrontControllerListener.ROUTES_ATTRIBUTE);
 
@@ -58,7 +66,6 @@ public void init() throws ServletException {
 
     protected void processRequest(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
-        res.setContentType("text/html;charset=UTF-8");
     PrintWriter out = res.getWriter();
 
     String servletPath = req.getServletPath();
@@ -74,12 +81,16 @@ public void init() throws ServletException {
                 try {
                     Class<?> controllerClass = mapping.getListeController();
                     Method method = mapping.getMethod();
+            if (method.isAnnotationPresent(ApiRest.class)) {
+                res.setContentType("application/json;charset=UTF-8");
+            }else{
+                res.setContentType("text/html;charset=UTF-8");
+            }
 
-                  Execution.executeMethode(method,req,res);
+                  Execution.executeMethode(method, req, res, applicationContext);
                 System.out.println("Controller: " + controllerClass);
                 System.out.println("Méthode: " + method.getName());
-                out.println("Controller: " + controllerClass.getSimpleName() + "<br>");
-                out.println("Méthode: " + method.getName() + "<br>");
+           
 
             } catch (Exception e) {
                 out.println("<h1> Erreur</h1>");

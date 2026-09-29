@@ -6,11 +6,11 @@ JAR_NAME="alpha"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC_DIR="$SCRIPT_DIR/src"
 BUILD_DIR="$SCRIPT_DIR/build"
-JAR_DIR="/home/ranto/S4/spring/Sprint/lib"
-WEB_LIB_DIR="/home/ranto/S4/spring/testSprint/src/main/webapp/WEB-INF/lib"
-ALPHA_JAR_PATH="/home/ranto/S4/spring/Sprint/lib/alpha.jar"  # ← AJOUTER CETTE LIGNE
+JAR_DIR="/home/miarantsoa/S5/Sprint/lib"
+WEB_LIB_DIR="/home/miarantsoa/S5/test/lib"
+ALPHA_JAR_PATH="/home/miarantsoa/S5/Sprint/lib/alpha.jar"  # ← AJOUTER CETTE LIGNE
 LIB_DIR="$SCRIPT_DIR/lib"
-TOMCAT_SERVLET_API_JAR="/home/ranto/tomcat/lib/servlet-api.jar"
+TOMCAT_SERVLET_API_JAR="/home/miarantsoa/tomcat/lib/servlet-api.jar"
 SOURCES_FILE="$BUILD_DIR/sources.txt"
 CLASSPATH=""
 CLASSPATH_ENTRIES=()
@@ -32,6 +32,12 @@ if [ -d "$LIB_DIR" ]; then
     while IFS= read -r jar_file; do
         CLASSPATH_ENTRIES+=("$jar_file")
     done < <(find "$LIB_DIR" -name "*.jar")
+fi
+
+if [ -d "$WEB_LIB_DIR" ]; then
+    while IFS= read -r jar_file; do
+        CLASSPATH_ENTRIES+=("$jar_file")
+    done < <(find "$WEB_LIB_DIR" -name "*.jar")
 fi
 
 if [ -f "$TOMCAT_SERVLET_API_JAR" ]; then
