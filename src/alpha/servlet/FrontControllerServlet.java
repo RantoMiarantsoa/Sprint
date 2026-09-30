@@ -86,7 +86,7 @@ public void init() throws ServletException {
             }else{
                 res.setContentType("text/html;charset=UTF-8");
             }
-
+//ETo le miantso anle mi retourne JSON
                   Execution.executeMethode(method, req, res, applicationContext);
                 System.out.println("Controller: " + controllerClass);
                 System.out.println("Méthode: " + method.getName());
