@@ -6,6 +6,7 @@
 
     import com.google.gson.Gson;
     import org.springframework.context.ApplicationContext;
+    import alpha.omega.ApiRest;
     import jakarta.servlet.http.HttpServlet;
     import jakarta.servlet.http.HttpServletRequest;
     import jakarta.servlet.http.HttpServletResponse;
@@ -31,26 +32,19 @@
 
         PrintWriter out = res.getWriter();
 
-        if (retour instanceof String str) {
-
-            out.println(str);
-
-        } else if (retour instanceof ModelAndView modelAndView) {
-
+        if (retour instanceof ModelAndView modelAndView) {
+            
             Dispatcher.dispatch(modelAndView, req, res);
 
-        } else if (retour != null) {
 
-            Gson gson = new Gson();
+        } else if (method.isAnnotationPresent(ApiRest.class)) {
 
-            String json = gson.toJson(retour);
-
-
-            out.println(json);
-
-        } else {
-
-            out.println("Type de retour non pris en charge");
+            if (retour instanceof String str) {
+                out.println(str);
+            } else {
+                Gson gson = new Gson();
+                out.println(gson.toJson(retour));
+            }
         }
 
     } catch (Exception e) {

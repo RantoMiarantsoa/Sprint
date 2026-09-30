@@ -75,12 +75,13 @@ public void init() throws ServletException {
         RouteMapping mapping = getProcessPathWithFallback(requestMethod, requestPath);
         System.out.println("URL demandée: " + requestPath);
         System.out.println("Méthode HTTP: " + requestMethod);
-        out.println("Request Path:" + requestPath);
+     
 
         if (mapping != null) {
                 try {
                     Class<?> controllerClass = mapping.getListeController();
                     Method method = mapping.getMethod();
+                    
             if (method.isAnnotationPresent(ApiRest.class)) {
                 res.setContentType("application/json;charset=UTF-8");
             }else{
