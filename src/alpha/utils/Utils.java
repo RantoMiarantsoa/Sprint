@@ -1,15 +1,12 @@
 package alpha.utils;
+import alpha.omega.UrlMapping;
+import java.io.File;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.io.File;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.lang.annotation.Annotation;
-import alpha.omega.UrlMapping;
 public class Utils {
     public static List<Class<?>> getNameClass(String packageName) {
     List<Class<?>> listeClass = new ArrayList<>();
