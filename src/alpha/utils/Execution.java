@@ -7,9 +7,14 @@ import java.lang.reflect.Parameter;
 import com.google.gson.Gson;
 import org.springframework.context.ApplicationContext;
 import alpha.omega.ApiRest;
+import alpha.omega.ModelAtrribute;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.InputStream;
+
+import java.lang.reflect.Field;
 
 public class Execution extends HttpServlet {
 
@@ -28,18 +33,15 @@ public class Execution extends HttpServlet {
             for (int i = 0; i < params.length; i++) {
                 String value = req.getParameter(params[i].getName());
                 Class<?> type = params[i].getType();
-
-                if (type == int.class) {
-                    arguments[i] = Integer.parseInt(value);
-                } else if (type == double.class) {
-                    arguments[i] = Double.parseDouble(value);
-                } else if (type == boolean.class) {
-                    arguments[i] = Boolean.parseBoolean(value);
-                } else if (type == long.class) {
-                    arguments[i] = Long.parseLong(value);
-                } else if (type == String.class) {
-                    arguments[i] = value;
+               if(params[i].isAnnotationPresent(ModelAtrribute.class)){
+                    arguments[i] = bindObject(type, req);
+               }else{
+                if(value == null){
+                    throw new RuntimeException("Parametre manquant: " +params[i].getName());
                 }
+                convert(value, type);
+               }
+              
 
 System.out.println(arguments[i]);
             }
@@ -72,6 +74,34 @@ System.out.println(arguments[i]);
         }
     }
 
+ private static Object bindObject(
+        Class<?> type,
+        HttpServletRequest req) throws Exception {
+
+    Object obj = type.getDeclaredConstructor().newInstance();
+
+    for (Field f : type.getDeclaredFields()) {
+f.setAccessible(true);
+if(f.getType() == MapFile.class){
+    Part part = req.getPart(f.getName());
+    if(part == null || part.getSize() == 0){
+        continue;
+    }
+    f.set(obj,toMapFile(part));
+}
+        String value = req.getParameter(f.getName());
+
+        if (value == null) {
+            continue;
+        }
+
+        f.setAccessible(true);
+
+        f.set(obj, convert(value, f.getType()));
+    }
+
+    return obj;
+}
     private static Object resolveArgument(Parameter parameter,
             HttpServletRequest req,
             HttpServletResponse res,
@@ -92,4 +122,31 @@ System.out.println(arguments[i]);
         return applicationContext.getBean(type);
     }
 
+public static Object convert(String value,Class<?> type){
+     if(type == String.class)
+     return value;
+     if(type == int.class || type == Integer.class)
+        return  Integer.parseInt(value);
+    if(type == double.class || type == Double.class)
+        return Double.parseDouble(value);
+    if(type == boolean.class || type == Boolean.class)
+        return Boolean.parseBoolean(value);
+    if( type == long.class || type == Long.class)
+        return Long.parseLong(value);
+    throw new IllegalArgumentException("Type inexistant :" + type.getName());
+}
+
+public static Object toMapFile(Part part) throws Exception{
+    String submitted = part.getSubmittedFileName();
+    String nom = submitted;
+    String extension = "";
+    int dot = submitted.lastIndexOf('.');
+    if(dot > 0){
+        nom = submitted.substring(0,dot);
+        extension = submitted.substring(1,dot);
+    }
+    try(InputStream in = part.getInputStream()){
+        return new MapFile(nom, extension, in.readAllBytes());
+    }
+}
 }
