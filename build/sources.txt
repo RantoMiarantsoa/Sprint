@@ -1,3 +1,4 @@
+/home/miarantsoa/S5/Sprint/src/alpha/utils/MapSession.java
 /home/miarantsoa/S5/Sprint/src/alpha/utils/MapFile.java
 /home/miarantsoa/S5/Sprint/src/alpha/utils/UrlClasse.java
 /home/miarantsoa/S5/Sprint/src/alpha/utils/Utils.java

@@ -11,69 +11,67 @@ import alpha.omega.ModelAtrribute;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.Part;
+
+import java.io.IOException;
 import java.io.InputStream;
 
 import java.lang.reflect.Field;
 
 public class Execution extends HttpServlet {
 
-    public static void executeMethode(Method method,
-            HttpServletRequest req,
-            HttpServletResponse res,
-            ApplicationContext applicationContext) {
-        try {
-            Class<?> clazz = method.getDeclaringClass();
-            Object object = clazz.getDeclaredConstructor().newInstance();
+  public static void executeMethode(Method method,
+        HttpServletRequest req,
+        HttpServletResponse res,
+        ApplicationContext applicationContext) {
+    try {
+        Class<?> clazz = method.getDeclaringClass();
+        Object object = clazz.getDeclaredConstructor().newInstance();
 
-            Parameter[] params = method.getParameters();
-            Object[] arguments = new Object[params.length];
+        Parameter[] params = method.getParameters();
+        Object[] arguments = new Object[params.length];
 
+        for (int i = 0; i < params.length; i++) {
+            Class<?> type = params[i].getType();
 
-            for (int i = 0; i < params.length; i++) {
+            if (type == MapSession.class) {
+
+                MapSession mapSession = new MapSession();
+                mapSession.put(method.getName(), req.getSession());
+                arguments[i] = mapSession;
+
+            } else if (params[i].isAnnotationPresent(ModelAtrribute.class)) {
+                arguments[i] = bindObject(type, req);
+
+            } else {
                 String value = req.getParameter(params[i].getName());
-                Class<?> type = params[i].getType();
-               if(params[i].isAnnotationPresent(ModelAtrribute.class)){
-                    arguments[i] = bindObject(type, req);
-               }else{
-                if(value == null){
-                    throw new RuntimeException("Parametre manquant: " +params[i].getName());
+                if (value == null) {
+                    throw new RuntimeException("Parametre manquant: " + params[i].getName());
                 }
-                convert(value, type);
-               }
-              
-
-System.out.println(arguments[i]);
+                 convert(value, type);   
             }
-
-            Object retour = method.invoke(object, arguments);
-           
-
-            PrintWriter out = res.getWriter();
-
-            for (Object argument : arguments) {
-    out.println(argument);
-}
-
-            if (retour instanceof ModelAndView modelAndView) {
-
-                Dispatcher.dispatch(modelAndView, req, res);
-
-            } else if (method.isAnnotationPresent(ApiRest.class)) {
-
-                if (retour instanceof String str) {
-                    out.println(str);
-                } else {
-                    Gson gson = new Gson();
-                    out.println(gson.toJson(retour));
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-    }
 
+        Object retour = method.invoke(object, arguments);
+
+        if (retour instanceof ModelAndView modelAndView) {
+            Dispatcher.dispatch(modelAndView, req, res);
+
+        } else if (method.isAnnotationPresent(ApiRest.class)) {
+            PrintWriter out = res.getWriter();
+            if (retour instanceof String str) {
+                out.println(str);
+            } else {
+                out.println(new Gson().toJson(retour));
+            }
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Erreur lors de l'exécution de la méthode: " + e.getMessage());
+    }
+}
  private static Object bindObject(
         Class<?> type,
         HttpServletRequest req) throws Exception {
