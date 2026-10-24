@@ -11,6 +11,9 @@ import alpha.omega.ModelAtrribute;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.InputStream;
+
 import java.lang.reflect.Field;
 
 public class Execution extends HttpServlet {
@@ -78,7 +81,14 @@ System.out.println(arguments[i]);
     Object obj = type.getDeclaredConstructor().newInstance();
 
     for (Field f : type.getDeclaredFields()) {
-
+f.setAccessible(true);
+if(f.getType() == MapFile.class){
+    Part part = req.getPart(f.getName());
+    if(part == null || part.getSize() == 0){
+        continue;
+    }
+    f.set(obj,toMapFile(part));
+}
         String value = req.getParameter(f.getName());
 
         if (value == null) {
@@ -126,5 +136,17 @@ public static Object convert(String value,Class<?> type){
     throw new IllegalArgumentException("Type inexistant :" + type.getName());
 }
 
-
+public static Object toMapFile(Part part) throws Exception{
+    String submitted = part.getSubmittedFileName();
+    String nom = submitted;
+    String extension = "";
+    int dot = submitted.lastIndexOf('.');
+    if(dot > 0){
+        nom = submitted.substring(0,dot);
+        extension = submitted.substring(1,dot);
+    }
+    try(InputStream in = part.getInputStream()){
+        return new MapFile(nom, extension, in.readAllBytes());
+    }
+}
 }

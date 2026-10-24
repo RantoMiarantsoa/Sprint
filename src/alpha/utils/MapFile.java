@@ -1,11 +1,16 @@
 package alpha.utils;
-import java.io.Byte; 
+
 public class MapFile {
+  
     String nomFichier;
     String extension;
-    Byte[] bytes;
+    byte[] bytes;
 
-
+  public MapFile(String nomFichier, String extension, byte[] bytes) {
+        this.nomFichier = nomFichier;
+        this.extension = extension;
+        this.bytes = bytes;
+    }
     public MapFile() {
     }
     public String getNomFichier() {
@@ -20,10 +25,10 @@ public class MapFile {
     public void setExtension(String extension) {
         this.extension = extension;
     }
-    public Bytes[] getBytes() {
+    public byte[] getBytes() {
         return bytes;
     }
-    public void setBytes(Bytes[] bytes) {
+    public void setBytes(byte[] bytes) {
         this.bytes = bytes;
     }
     
