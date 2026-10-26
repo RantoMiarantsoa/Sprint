@@ -25,4 +25,14 @@ public class MapSession {
     }
 
     public Map<String, Object> getMapsession() { return mapsession; }
+
+    public String getId(String methodName) {
+    HttpSession session = getSession(methodName);
+
+    if (session == null) {
+        return null;
+    }
+
+    return session.getId();
+}
 }
