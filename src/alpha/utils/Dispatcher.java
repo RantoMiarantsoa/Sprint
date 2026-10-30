@@ -3,6 +3,7 @@ package alpha.utils;
 import java.io.IOException;
 import java.util.Map;
 import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,11 +15,9 @@ public class Dispatcher {
             HttpServletResponse response)
             throws ServletException, IOException {
 
-        String prefix = request.getServletContext()
-                .getInitParameter("prefix");
-
-        String suffix = request.getServletContext()
-                .getInitParameter("suffix");
+      ServletContext context = request.getServletContext();
+      String prefix = context.getInitParameter("prefix");
+      String suffix = context.getInitParameter("suffix");
 
         String view = prefix + mv.getURL() + suffix;
         for (Map.Entry<String, Object> entry : mv.getAttributes().entrySet()) {
