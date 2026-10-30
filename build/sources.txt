@@ -2,11 +2,14 @@
 /home/miarantsoa/S5/Sprint/src/alpha/utils/MapFile.java
 /home/miarantsoa/S5/Sprint/src/alpha/utils/UrlClasse.java
 /home/miarantsoa/S5/Sprint/src/alpha/utils/Utils.java
+/home/miarantsoa/S5/Sprint/src/alpha/utils/SessionHandler.java
 /home/miarantsoa/S5/Sprint/src/alpha/utils/RouteMapping.java
 /home/miarantsoa/S5/Sprint/src/alpha/utils/ModelAndView.java
 /home/miarantsoa/S5/Sprint/src/alpha/utils/Execution.java
+/home/miarantsoa/S5/Sprint/src/alpha/utils/ServletContext.java
 /home/miarantsoa/S5/Sprint/src/alpha/utils/Dispatcher.java
 /home/miarantsoa/S5/Sprint/src/alpha/servlet/FrontControllerServlet.java
+/home/miarantsoa/S5/Sprint/src/alpha/omega/Auth.java
 /home/miarantsoa/S5/Sprint/src/alpha/omega/ApiRest.java
 /home/miarantsoa/S5/Sprint/src/alpha/omega/Controller.java
 /home/miarantsoa/S5/Sprint/src/alpha/omega/ModelAtrribute.java

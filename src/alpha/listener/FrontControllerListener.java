@@ -19,16 +19,24 @@ public class FrontControllerListener implements ServletContextListener {
     public static final String ROUTES_ATTRIBUTE = "routes";
     public static final String PACKAGE_NAME_ATTRIBUTE = "packageName";
 
+    
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
+            
             ServletContext context = sce.getServletContext();
             String packageName = context.getInitParameter(PACKAGE_NAME_ATTRIBUTE);
 
             if (packageName == null || packageName.isEmpty()) {
                 throw new IllegalStateException("packageName context-param is required");
             }
+  String prefix = context.getInitParameter("prefix");
+String session = context.getInitParameter("idsession");
+        String suffix = context.getInitParameter("suffix");
 
+        context.setAttribute("prefix", prefix);
+        context.setAttribute("suffix", suffix);
+        context.setAttribute("idsession", session);
             List<Class<?>> controllers = Utils.getNameAnnote(Controller.class, packageName);
             HashMap<UrlClasse, RouteMapping> routes = Utils.getMethodFunction(controllers);
 

@@ -7,22 +7,40 @@ public class MapSession {
 
     // clé : nom de la méthode, valeur : session Tomcat
     private Map<String, Object> mapsession = new HashMap<>();
+private String idSession;
 
-    public void put(String methodName, HttpSession session) {
-        mapsession.put(methodName, session);
+public void setIdSession(String idSession) {
+    this.idSession = idSession;
+}
+
+public String getIdSession() {
+    return idSession;
+}
+    public void put(String key, HttpSession session) {
+        mapsession.put(key, session);
     }
 
-    public HttpSession getSession(String methodName) {
-        return (HttpSession) mapsession.get(methodName);
+    public boolean contains(String key) {
+        return mapsession.containsKey(key);
     }
 
-    public boolean contains(String methodName) {
-        return mapsession.containsKey(methodName);
-    }
-
-    public Set<String> getMethodNames() {
+    public Set<String> getkeys() {
         return mapsession.keySet();
     }
 
     public Map<String, Object> getMapsession() { return mapsession; }
+    public void ajouter(String key, Object value) {
+        mapsession.put(key, value);
+        
+    }
+
+    public void delete(String key) {
+        mapsession.remove(key);
+    }
+
+    public Object get(String key) {
+        return mapsession.get(key);
+    }
+
+    
 }
