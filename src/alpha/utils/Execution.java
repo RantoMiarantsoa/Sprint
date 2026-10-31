@@ -3,6 +3,7 @@ package alpha.utils;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.Arrays;
 
 import com.google.gson.Gson;
 import org.springframework.context.ApplicationContext;
@@ -17,6 +18,7 @@ import jakarta.servlet.http.Part;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 
 import java.lang.reflect.Field;
 
@@ -41,19 +43,28 @@ public class Execution extends HttpServlet {
                 if (sessionKey == null) {
                     sessionKey = "idsession";
                 }
-
+                
                 HttpSession httpSession = req.getSession(false);
-
+                
                 MapSession mapSession = (httpSession == null)
-                        ? null
-                        : (MapSession) httpSession.getAttribute("mapSession");
-
+                ? null
+                : (MapSession) httpSession.getAttribute("mapSession");
+                
                 if (mapSession == null || mapSession.get(sessionKey) == null) {
                     res.sendError(
-                            HttpServletResponse.SC_UNAUTHORIZED,
-                            "Authentification requise");
-                    return;
-                }
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        "Authentification requise");
+                        return;
+                    }
+                   String[] role = method.getAnnotation(Auth.class).value();
+                    if(role.length > 0){
+                        Object roleUtilisateur = mapSession.get("role");
+
+                        if(!verifierRole(role, roleUtilisateur)){
+                             res.sendError(HttpServletResponse.SC_FORBIDDEN, "Accès refusé : rôle insuffisant");
+    return;
+                        }
+                    }
             }
 
             Object retour = method.invoke(object, arguments);
@@ -102,7 +113,15 @@ public class Execution extends HttpServlet {
         }
         return arguments;
     }
-
+public static boolean verifierRole(String[] roleRequis,Object roleUtilisateur){
+    if(roleRequis.length == 0){
+        return true;
+    }
+    if(roleUtilisateur == null){
+        return false;
+    }
+return Arrays.asList(roleRequis).contains(roleUtilisateur.toString());
+}
     private static void envoyerReponse(
             Object retour,
             HttpServletResponse res) throws Exception {
