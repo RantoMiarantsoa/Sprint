@@ -32,8 +32,10 @@ public class Execution extends HttpServlet {
 
         try {
             Class<?> clazz = method.getDeclaringClass();
-            Object object = clazz.getDeclaredConstructor().newInstance();
-
+           Object object = Singleton.getInstance()
+        .getControleur(clazz, req.getServletContext());
+System.out.println("controleur " + clazz.getSimpleName()
+        + " @" + System.identityHashCode(object));
             Object[] arguments = preparerArguments(method, req, res, applicationContext);
             if (method.isAnnotationPresent(Auth.class)) {
 
